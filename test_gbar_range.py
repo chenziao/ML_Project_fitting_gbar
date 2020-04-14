@@ -37,23 +37,23 @@ cell.current_inject(inj_ideal,noise=noise_amp) # noise exists throughout the sim
 
 
 # Example: Run 8 cases with min/max gbar of each channel
-g_n = np.array(['gl','gna','gk'])  # channel names
+g_n = ['gl','gna','gk']  # channel names
 g_range = np.array([[0.0002,0.0004],[0.04,0.12],[0.035,0.060]]) # Lower/Upper bound for each channel
 idx = np.array(np.unravel_index(np.arange(8),(2,2,2))) # index for selecting gbar
-V = np.zeros([2,2,2,t.shape[0]+1]) # array to store results from 8 cases
+V = np.zeros([8,t.shape[0]+1]) # array to store results from 8 cases
 
 for i in range(8):
     for j in range(3):
         setattr(cell,g_n[j],g_range[j,idx[j,i]]) # set gbar for each channel
     h.run() # run simulation
-    V[tuple(list(idx[:,i])+[Ellipsis])] = cell.v.as_numpy() # store results as numpy array
+    V[i,:] = cell.v.as_numpy() # store results as numpy array
 
 
 LU = np.array(['L','H']) # denote lower & Upper bound.
 plt.figure(figsize=(8,12))
 for i in range(8):
     plt.subplot(4,2,i+1)
-    plt.plot(t_vec,V[tuple(list(idx[:,i])+[Ellipsis])])
+    plt.plot(t_vec,V[i,:])
     plt.xlim(0,tstop)
-    plt.title(','.join(g_n.tolist())+':'+','.join(LU[idx[:,i]].tolist()))
+    plt.title(','.join(g_n)+':'+','.join(LU[idx[:,i]].tolist()))
 
